@@ -1,0 +1,2 @@
+# K8s_kustomization_deployments
+Monorepo with kustomization deployments
