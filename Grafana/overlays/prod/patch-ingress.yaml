@@ -6,3 +6,6 @@ spec:
   routes:
     - match: Host(`grafana.prod.horna.local`)
       kind: Rule
+      services:
+        - name: grafana-service
+          port: 3000
