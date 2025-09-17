@@ -6,7 +6,7 @@ spec:
   entryPoints:
     - web
   routes:
-    - match: Host(`grafana.app.horna.local`)
+    - match: Host(`REPLACE_ME_HOST`)
       kind: Rule
       services:
         - name: grafana-service

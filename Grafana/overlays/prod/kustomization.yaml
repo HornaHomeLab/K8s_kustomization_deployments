@@ -3,3 +3,10 @@ kind: Kustomization
 
 resources:
   - ../../base
+
+
+patches:
+  - path: patch-ingress.yaml
+    target:
+      kind: IngressRoute
+      name: grafana-ingress-route
