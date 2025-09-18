@@ -1,0 +1,11 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: loki-ingress-route
+spec:
+  routes:
+    - match: Host(`loki.prod.horna.local`)
+      kind: Rule
+      services:
+        - name: loki-service
+          port: 3100

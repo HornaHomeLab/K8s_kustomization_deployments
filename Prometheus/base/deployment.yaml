@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  labels:
+    app: prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus:v3.5.0
+          
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yaml"
+            - "--storage.tsdb.retention.time=2y"
+            - "--storage.tsdb.path=/prometheus"
+          
+          ports:
+            - containerPort: 9090
+          
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          
+          volumeMounts:
+            - name: prometheus-storage 
+              mountPath: /prometheus
+            - name: prometheus-config
+              mountPath: /etc/prometheus
+          
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: 9090
+            initialDelaySeconds: 15
+            periodSeconds: 20
+
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: 9090
+            initialDelaySeconds: 15
+            periodSeconds: 20
+      
+      volumes:
+        - name: prometheus-storage
+          persistentVolumeClaim:
+            claimName: prometheus-pvc
+        - name: prometheus-config
+          configMap:
+            name: prometheus-config
