@@ -17,39 +17,46 @@ spec:
       containers:
         - name: loki
           image: grafana/loki:3.5.5
-          
+          env:
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: loki-minio-creds
+                  key: access_key
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: loki-minio-creds
+                  key: secret_key
+
           args:
             - "-config.file=/etc/loki/conf/config.yaml"
-          
+            - "-config.expand-env=true"
+
           ports:
             - containerPort: 3100
-          
+
           resources:
             requests:
               memory: "256Mi"
               cpu: "250m"
-            
+
             limits:
               memory: "512Mi"
               cpu: "500m"
-          
+
           volumeMounts:
-            - name: loki-storage 
-              mountPath: /loki
             - name: loki-config
               mountPath: etc/loki/conf
-          
+
           readinessProbe:
             httpGet:
               path: /ready
               port: 3100
             initialDelaySeconds: 15
             periodSeconds: 20
-      
+
       volumes:
-        - name: loki-storage
-          persistentVolumeClaim:
-            claimName: loki-pvc
         - name: loki-config
           configMap:
             name: loki-config

@@ -14,25 +14,34 @@ data:
 
     common:
       path_prefix: /loki
-      storage:
-        filesystem:
-          chunks_directory: /loki/chunks
-          rules_directory: /loki/rules
+          
       replication_factor: 1
       ring:
         kvstore:
           store: inmemory
 
+    storage_config:
+      aws:
+        s3: s3://${MINIO_ACCESS_KEY}:${MINIO_SECRET_KEY}@minio-service.minio.svc.cluster.local:9000/loki-data
+        s3forcepathstyle: true
+
     schema_config:
       configs:
         - from: 2025-09-18
           store: tsdb
-          object_store: filesystem
+          object_store: s3
           schema: v13
           index:
             prefix: tsdb_index_
             period: 24h
-
+    
+    ingester:
+      chunk_idle_period: 60s 
+      chunk_retain_period: 60s
+      wal:
+        enabled: true
+        dir: /loki/wal
+        
     limits_config:
       retention_period: 365d
       ingestion_rate_mb: 10
@@ -46,7 +55,7 @@ data:
       working_directory: /tmp/loki/retention
       retention_enabled: true
       retention_delete_delay: 24h
-      delete_request_store: filesystem
+      delete_request_store: s3
 
     analytics:
       reporting_enabled: false
