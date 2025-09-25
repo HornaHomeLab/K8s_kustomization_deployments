@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mimir-config
+  labels:
+    app: mimir
+data:
+  config.yaml: |
+    target: all,overrides-exporter
+
+    # Configure Mimir to use Minio as object storage backend.
+    common:
+      storage:
+        backend: s3
+        s3:
+          endpoint: minio-service.minio.svc.cluster.local:9000
+          access_key_id: ${MINIO_ACCESS_KEY}
+          secret_access_key: ${MINIO_SECRET_KEY}
+          insecure: true
+          bucket_name: mimir-data
+
+    # Blocks storage requires a prefix when using a common object storage bucket.
+    blocks_storage:
+      storage_prefix: blocks
+      tsdb:
+        dir: /data/ingester
+      
+      # --- Caching Configuration (Memcached sidecar) ---
+      bucket_store:
+        # Chunks Cache
+        chunks_cache:
+          backend: memcached
+          memcached:
+            addresses: 127.0.0.1:11211
+
+        # Index Cache
+        index_cache:
+          backend: memcached
+          memcached:
+            addresses: 127.0.0.1:11211
+
+        # Metadata Cache
+        metadata_cache:
+          backend: memcached
+          memcached:
+            addresses: 127.0.0.1:11211
+
+    # Configure the Query Frontend to use the Results Cache
+    frontend:
+      cache_results: true
+      results_cache:
+        backend: memcached
+        memcached:
+          addresses: 127.0.0.1:11211
+
+    server:
+      log_level: info

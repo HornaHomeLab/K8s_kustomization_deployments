@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mimir
+  labels:
+    app: mimir
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mimir
+  template:
+    metadata:
+      labels:
+        app: mimir
+    spec:
+      volumes:
+        - name: mimir-config
+          configMap:
+            name: mimir-config
+      containers:
+        - name: mimir
+          image: grafana/mimir:2.17.1
+          args:
+            - "-config.file=etc/mimir/conf/config.yaml"
+            - "-config.expand-env=true"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "0.25"
+
+            limits:
+              memory: "2Gi"
+              cpu: "1"
+
+          env:
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: mimir-minio-creds
+                  key: access_key
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: mimir-minio-creds
+                  key: secret_key
+
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 9095
+              name: grpc
+
+          volumeMounts:
+            - name: mimir-config
+              mountPath: etc/mimir/conf
+
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+
+        - name: memcached
+          image: memcached:1.6.24-alpine
+          args:
+            # -m 64: Sets the memory limit to 64MB
+            # -c 1024: Sets the max concurrent connections
+            - "-m"
+            - "256"
+            - "-c"
+            - "1024"
+
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "0.05"
+
+            limits:
+              memory: "256Mi"
+              cpu: "0.2"
+
+          ports:
+            - containerPort: 11211

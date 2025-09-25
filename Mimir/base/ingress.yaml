@@ -1,0 +1,13 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: mimir-ingress-route
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`REPLACE_ME_HOST`)
+      kind: Rule
+      services:
+        - name: mimir-service
+          port: 9009
