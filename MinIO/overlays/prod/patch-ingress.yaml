@@ -1,0 +1,16 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: loki-ingress-route
+spec:
+  routes:
+    - match: Host(`minio.api.prod.horna.local`)
+      kind: Rule
+      services:
+        - name: minio-service
+          port: 9000
+    - match: Host(`minio.ui.prod.horna.local`)
+      kind: Rule
+      services:
+        - name: minio-service
+          port: 9001
