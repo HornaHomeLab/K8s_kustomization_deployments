@@ -54,7 +54,7 @@ spec:
               path: /ready
               port: 3100
             initialDelaySeconds: 15
-            periodSeconds: 20
+            periodSeconds: 10
 
       volumes:
         - name: loki-config
