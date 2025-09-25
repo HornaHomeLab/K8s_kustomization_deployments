@@ -8,6 +8,10 @@ data:
   config.yaml: |
     target: all,overrides-exporter
 
+    limits:
+      ingestion_rate: 100000 
+      ingestion_burst_size: 1000000 
+
     # Configure Mimir to use Minio as object storage backend.
     common:
       storage:
@@ -27,19 +31,16 @@ data:
       
       # --- Caching Configuration (Memcached sidecar) ---
       bucket_store:
-        # Chunks Cache
         chunks_cache:
           backend: memcached
           memcached:
             addresses: 127.0.0.1:11211
 
-        # Index Cache
         index_cache:
           backend: memcached
           memcached:
             addresses: 127.0.0.1:11211
 
-        # Metadata Cache
         metadata_cache:
           backend: memcached
           memcached:
@@ -52,6 +53,13 @@ data:
         backend: memcached
         memcached:
           addresses: 127.0.0.1:11211
+      
+    ingester:
+      ring:
+        replication_factor: 1 
+
+    compactor:
+      data_dir: /data/compactor  
 
     server:
       log_level: info

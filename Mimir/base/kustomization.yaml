@@ -5,6 +5,7 @@ namespace: mimir
 
 resources:
   - namespace.yaml
+  - pvc.yaml
   - external-secret.yaml
   - config.yaml
   - deployment.yaml
