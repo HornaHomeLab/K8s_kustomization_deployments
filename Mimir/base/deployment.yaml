@@ -71,8 +71,6 @@ spec:
         - name: memcached
           image: memcached:1.6.24-alpine
           args:
-            # -m 64: Sets the memory limit to 64MB
-            # -c 1024: Sets the max concurrent connections
             - "-m"
             - "256"
             - "-c"
