@@ -21,8 +21,12 @@ data:
 
     storage_config:
       aws:
-        s3: s3://${MINIO_ACCESS_KEY}:${MINIO_SECRET_KEY}@minio-service.minio.svc.cluster.local:9000/loki-data
+        endpoint: http://minio-service.minio.svc.cluster.local:9000
+        bucketnames: loki-data
+        access_key_id: ${MINIO_ACCESS_KEY} 
+        secret_access_key: ${MINIO_SECRET_KEY}
         s3forcepathstyle: true
+        insecure: true
 
     schema_config:
       configs:
@@ -52,11 +56,6 @@ data:
 
     chunk_store_config:
       chunk_cache_config:
-        memcached_client:
-          consistent_hash: true
-          addresses: "127.0.0.1:11211"
-
-      write_dedupe_cache_config:
         memcached_client:
           consistent_hash: true
           addresses: "127.0.0.1:11211"
