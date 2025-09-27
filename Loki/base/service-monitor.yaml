@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: loki-metrics
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: loki
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
