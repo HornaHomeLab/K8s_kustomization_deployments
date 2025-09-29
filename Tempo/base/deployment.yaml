@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tempo
+  labels:
+    app: tempo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tempo
+  template:
+    metadata:
+      labels:
+        app: tempo
+    spec:
+      volumes:
+        - name: config-volume
+          configMap:
+            name: tempo-config
+        - name: tempo-storage
+          persistentVolumeClaim:
+            claimName: tempo-pvc
+
+      containers:
+        - name: tempo
+          image: grafana/tempo:2.9.0-rc.0
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "0.25"
+
+            limits:
+              memory: "512Gi"
+              cpu: "1"
+
+          args:
+            - -config.file=/etc/tempo/tempo.yaml
+            - -config.expand-env=true
+
+          ports:
+            - name: http-query
+              containerPort: 3200
+            - name: grpc-query
+              containerPort: 9095
+            - name: otlp-grpc
+              containerPort: 4317
+            - name: otlp-http
+              containerPort: 4318
+
+          env:
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: tempo-minio-creds
+                  key: access_key
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: tempo-minio-creds
+                  key: secret_key
+
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/tempo
+            - name: tempo-storage
+              mountPath: /data
+
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3200
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+
+        - name: memcached
+          image: memcached:1.6.24-alpine
+          args:
+            - "-m"
+            - "256"
+            - "-c"
+            - "1024"
+
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "0.05"
+
+            limits:
+              memory: "256Mi"
+              cpu: "0.2"
+
+          ports:
+            - containerPort: 11211
