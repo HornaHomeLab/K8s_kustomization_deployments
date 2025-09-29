@@ -11,6 +11,7 @@ data:
     limits:
       ingestion_rate: 100000 
       ingestion_burst_size: 1000000 
+      max_global_series_per_user: 0 # unlimited
 
     # Configure Mimir to use Minio as object storage backend.
     common:
