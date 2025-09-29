@@ -7,5 +7,5 @@ spec:
     - match: Host(`loki.prod.horna.local`)
       kind: Rule
       services:
-        - name: loki-service
+        - name: service
           port: 3100

@@ -9,5 +9,5 @@ spec:
     - match: Host(`REPLACE_ME_HOST`)
       kind: Rule
       services:
-        - name: mimir-service
+        - name: service
           port: 9009

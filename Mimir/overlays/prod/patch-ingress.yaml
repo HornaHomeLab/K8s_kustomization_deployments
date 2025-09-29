@@ -7,5 +7,5 @@ spec:
     - match: Host(`mimir.prod.horna.local`)
       kind: Rule
       services:
-        - name: mimir-service
+        - name: service
           port: 8080
