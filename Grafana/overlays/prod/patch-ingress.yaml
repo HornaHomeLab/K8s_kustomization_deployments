@@ -3,9 +3,14 @@ kind: IngressRoute
 metadata:
   name: grafana-ingress-route # Kustomize matches by name and kind
 spec:
+  entryPoints:
+    - websecure 
   routes:
     - match: Host(`grafana.prod.horna.local`)
       kind: Rule
       services:
         - name: service
           port: 3000
+
+  tls:
+    secretName: tls-secret

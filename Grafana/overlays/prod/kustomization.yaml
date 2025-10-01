@@ -10,3 +10,7 @@ patches:
     target:
       kind: IngressRoute
       name: grafana-ingress-route
+  - path: patch.cert.yaml
+    target:
+      kind: Certificate
+      name: cert
