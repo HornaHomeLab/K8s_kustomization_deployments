@@ -1,7 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: alloy # Use your desired namespace
+namespace: alloy 
 
 resources:
   - namespace.yaml 
@@ -10,7 +10,7 @@ resources:
 helmCharts:
   - name: alloy
     repo: https://grafana.github.io/helm-charts
-    version: "1.2.1" # Find the latest version
+    version: "1.2.1" 
     releaseName: alloy
     namespace: alloy
     includeCRDs: true
@@ -28,10 +28,9 @@ helmCharts:
               fieldRef:
                 fieldPath: spec.nodeName
 
-# 3. Generate the ConfigMap from the local file
 configMapGenerator:
-- name: alloy-config # Name for the ConfigMap
+- name: alloy-config
   files:
-  - config.alloy=alloy-config.alloy # Map local file to key in CM
+  - config.alloy=alloy-config.alloy
   options:
     disableNameSuffixHash: true
