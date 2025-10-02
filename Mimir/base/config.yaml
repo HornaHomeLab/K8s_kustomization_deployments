@@ -64,3 +64,4 @@ data:
 
     server:
       log_level: info
+      log_format: json

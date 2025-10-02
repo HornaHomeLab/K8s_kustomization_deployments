@@ -1,6 +1,6 @@
 logging {
   level  = "info"
-  format = "logfmt"
+  format = "json"
 }
 
 loki.write "default" {
