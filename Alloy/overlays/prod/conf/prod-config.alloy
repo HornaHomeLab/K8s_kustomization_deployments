@@ -1,0 +1,62 @@
+logging {
+  level  = "info"
+  format = "json"
+}
+
+loki.write "default" {
+  endpoint {
+    url = "http://service.loki.svc.cluster.local:3100/loki/api/v1/push" // Replace with your Loki endpoint
+  }
+}
+
+
+// Discover Pods on the current Node (critical for DaemonSet efficiency)
+discovery.kubernetes "pod" {
+  role = "pod"
+  
+  // Restrict to pods on the node to reduce cpu & memory usage
+  selectors {
+    role = "pod"
+    field = "spec.nodeName=" + coalesce(sys.env("HOSTNAME"), constants.hostname)
+  }
+}
+
+// Relabel the discovered targets and add standard Loki labels
+discovery.relabel "kube_relabel" {
+  targets = discovery.kubernetes.pod.targets
+
+  // Map namespace
+  rule {
+    source_labels = ["__meta_kubernetes_namespace"]
+    target_label  = "namespace"
+  }
+
+  // Map pod name
+  rule {
+    source_labels = ["__meta_kubernetes_pod_name"]
+    target_label  = "pod"
+  }
+
+  // Map container name
+  rule {
+    source_labels = ["__meta_kubernetes_container_name"]
+    target_label  = "container"
+  }
+}
+
+// Read the logs from the discovered and relabeled pods
+loki.source.kubernetes "container_logs" {
+  
+  // Use the output of the relabel component as targets
+  targets    = discovery.relabel.kube_relabel.output
+  
+  // Forward the *read log lines* to the Loki destination
+  forward_to = [loki.write.default.receiver]
+}
+
+// Collect Kubernetes API Events and convert them into log lines
+loki.source.kubernetes_events "events" {
+  forward_to = [loki.write.default.receiver]
+  job_name   = "kubernetes-events"
+  log_format = "json"
+}

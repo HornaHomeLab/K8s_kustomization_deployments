@@ -31,6 +31,6 @@ helmCharts:
 configMapGenerator:
 - name: alloy-config
   files:
-  - config.alloy=alloy-config.alloy
+  - config.alloy=conf/alloy-config.alloy
   options:
     disableNameSuffixHash: true

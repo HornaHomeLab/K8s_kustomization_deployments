@@ -4,11 +4,10 @@ kind: Kustomization
 resources:
   - ../../base
 
-
 configMapGenerator:
-- name: alloy-config
-  files:
-  - config.alloy=prod-config.alloy
-  options:
-    disableNameSuffixHash: true
-  behavior: replace
+  - name: alloy-config
+    files:
+      - config.alloy=conf/prod-config.alloy
+    options:
+      disableNameSuffixHash: true
+    behavior: replace
