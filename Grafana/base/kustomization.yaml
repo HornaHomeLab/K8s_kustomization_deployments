@@ -11,3 +11,10 @@ resources:
   - ingress.yaml
   - service-monitor.yaml
   - cert.yaml
+
+configMapGenerator:
+- name: grafana-config
+  files:
+  - custom.ini=conf/grafana-config.ini
+  options:
+    disableNameSuffixHash: true

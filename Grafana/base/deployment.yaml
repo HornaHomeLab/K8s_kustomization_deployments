@@ -14,11 +14,23 @@ spec:
       labels:
         app: grafana
     spec:
+      volumes:
+        - name: grafana-config
+          configMap:
+            name: grafana-config
+
+        - name: grafana-storage
+          persistentVolumeClaim:
+            claimName: grafana-pvc
+
       containers:
         - name: grafana
           image: grafana/grafana:12.1.0
+          args:
+            - --config=/etc/grafana/conf/custom.ini
           ports:
-            - containerPort: 3000
+            - name: http
+              containerPort: 3000
           resources:
             requests:
               memory: "256Mi"
@@ -27,9 +39,7 @@ spec:
               memory: "512Mi"
               cpu: "500m"
           volumeMounts:
-            - name: grafana-storage 
-              mountPath: /var/lib/grafana 
-      volumes:
-        - name: grafana-storage
-          persistentVolumeClaim:
-            claimName: grafana-pvc
+            - name: grafana-storage
+              mountPath: /var/lib/grafana
+            - name: grafana-config
+              mountPath: /etc/grafana/conf

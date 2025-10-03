@@ -4,6 +4,13 @@ kind: Kustomization
 resources:
   - ../../base
 
+configMapGenerator:
+- name: grafana-config
+  files:
+  - custom.ini=conf/prod-config.ini
+  options:
+    disableNameSuffixHash: true
+  behavior: replace
 
 patches:
   - path: patch-ingress.yaml
