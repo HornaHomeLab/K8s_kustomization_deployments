@@ -7,9 +7,14 @@ resources:
   - namespace.yaml
   - pvc.yaml
   - external-secret.yaml
-  - config.yaml
   - deployment.yaml
   - service.yaml
   - ingress.yaml
   - service-monitor.yaml
-  
+
+configMapGenerator:
+  - name: tempo-config
+    files:
+      - tempo.yaml=conf/tempo-config.yaml
+    options:
+      disableNameSuffixHash: true

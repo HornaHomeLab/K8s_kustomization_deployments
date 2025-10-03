@@ -4,6 +4,13 @@ kind: Kustomization
 resources:
   - ../../base
 
+configMapGenerator:
+  - name: tempo-config
+    files:
+      - tempo.yaml=conf/prod-config.yaml
+    options:
+      disableNameSuffixHash: true
+    behavior: replace
 
 patches:
   - path: patch-ingress.yaml
