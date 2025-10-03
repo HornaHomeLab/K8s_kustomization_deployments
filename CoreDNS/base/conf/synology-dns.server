@@ -1,0 +1,6 @@
+horna.local:53 {
+    errors
+    cache 3600
+    # Forward only requests for horna.local to the internal DNS server
+    forward . 10.0.10.11
+}
