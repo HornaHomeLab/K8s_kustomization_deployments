@@ -6,10 +6,16 @@ namespace: loki
 resources:
   - namespace.yaml
   - external-secret.yaml
-  - config.yaml
   - pvc.yaml
   - deployment.yaml
   - service.yaml
   - ingress.yaml
   - service-monitor.yaml
   
+
+configMapGenerator:
+- name: loki-config
+  files:
+  - config.yaml=conf/loki-config.yaml
+  options:
+    disableNameSuffixHash: true
